@@ -1,0 +1,121 @@
+# SEPARATE API AND WEB REPOSITORIES
+name: Release
+
+on:
+  push:
+    branches: [
+      demo
+    ]
+
+env:
+  RELEASE_REVISION: "pr-${{ github.run_id }}-${{ github.sha }}"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+  ECR_REPOSITORY_WEB: "toptal/web"
+  ECR_REPOSITORY_API: "toptal/api"
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          # Short name for current branch. For PRs, use target branch (base ref)
+          GIT_BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          echo "KUBE_NAMESPACE=default" >> $GITHUB_ENV
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.push.head.sha }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+      - name: Docker cache layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+      - name: Build & Push Web Image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:${{ env.RELEASE_REVISION }}
+        run: |
+          docker buildx create --use
+
+          docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+            --tag ${{ env.RELEASE_IMAGE }} \
+            --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:${{ env.GIT_BRANCH }}-latest \
+            --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:latest \
+            --push \
+            .
+
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Build & Push Api Image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:${{ env.RELEASE_REVISION }}
+        run: |
+          docker buildx create --use
+
+          docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+            --tag ${{ env.RELEASE_IMAGE }} \
+            --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:${{ env.GIT_BRANCH }}-latest \
+            --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:latest \
+            --push \
+            .
+
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Deploy Web to Kubernetes cluster
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:${{ env.RELEASE_REVISION }}
+        with:
+          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH }} && kubectl set image deployment/${{ env.GIT_BRANCH }}-web-deployment ${{ env.GIT_BRANCH }}-web=${{ env.RELEASE_IMAGE }} --record -n ${{ env.KUBE_NAMESPACE }}
+      - name: Deploy API to Kubernetes cluster
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.RELEASE_REVISION }}
+        with:
+          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH }} && kubectl set image deployment/${{ env.GIT_BRANCH }}-api-deployment ${{ env.GIT_BRANCH }}-api=${{ env.RELEASE_IMAGE }} --record -n ${{ env.KUBE_NAMESPACE }}
+      - name: verify web deployment
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH } && kubectl config set-context --current --namespace=${{ env.KUBE_NAMESPACE }} && kubectl rollout status deployment/${{ env.GIT_BRANCH }}-web-deployment
+      - name: verify api deployment
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH } && kubectl config set-context --current --namespace=${{ env.KUBE_NAMESPACE }} && kubectl rollout status deployment/${{ env.GIT_BRANCH }}-api-deployment
