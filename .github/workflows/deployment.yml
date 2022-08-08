@@ -69,7 +69,7 @@ jobs:
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:${{ env.GIT_BRANCH }}-latest \
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:latest \
             --push \
-            .
+            app/web/.
 
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
@@ -87,7 +87,7 @@ jobs:
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:${{ env.GIT_BRANCH }}-latest \
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:latest \
             --push \
-            .
+            app/api/.
 
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
@@ -112,7 +112,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH } && kubectl config set-context --current --namespace=${{ env.KUBE_NAMESPACE }} && kubectl rollout status deployment/${{ env.GIT_BRANCH }}-web-deployment
+          args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH }} && kubectl config set-context --current --namespace=${{ env.KUBE_NAMESPACE }} && kubectl rollout status deployment/${{ env.GIT_BRANCH }}-web-deployment
       - name: verify api deployment
         uses: kodermax/kubectl-aws-eks@master
         env:
