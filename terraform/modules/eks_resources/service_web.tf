@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "web_deployment" {
 
           env {
             name  = "API_HOST"
-            value = var.api_host
+            value = "https://${var.domain}/api"
           }
 
           env {

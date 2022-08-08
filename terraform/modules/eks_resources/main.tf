@@ -60,7 +60,7 @@ resource "kubernetes_namespace" "sla" {
   }
 }
 
-module "cloudwatch_logs" {
+/*module "cloudwatch_logs" {
   source = "git::https://github.com/DNXLabs/terraform-aws-eks-cloudwatch-logs.git"
 
   enabled = true
@@ -77,4 +77,4 @@ module "kubernetes_dashboard" {
   source = "git::https://github.com/lablabs/terraform-aws-eks-kubernetes-dashboard.git"
 
   settings = {}
-}
+}*/

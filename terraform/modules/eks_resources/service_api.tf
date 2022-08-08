@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "api_deployment" {
 
           env {
             name  = "DB_HOST"
-            value = var.db_host
+            value = var.db_endpoint
           }
 
           env {
@@ -52,7 +52,7 @@ resource "kubernetes_deployment" "api_deployment" {
 
           env {
             name  = "DB_PORT"
-            value = var.db_port
+            value = 5432
           }
 
           env {

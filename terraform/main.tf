@@ -72,7 +72,7 @@ module "eks" {
 }
 
 module "eks_resources" {
-  source = "../../modules/eks_resources"
+  source = "./modules/eks_resources"
 
   environment = terraform.workspace
   region      = var.region
@@ -83,7 +83,6 @@ module "eks_resources" {
   oidc_provider_arn       = module.eks.oidc_provider_arn
   cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
   worker_iam_role_name    = module.eks.worker_iam_role_name
-  efs_subnet_ids          = var.efs_subnet_ids
   domain                  = var.domain
 
   db_name                 = var.db_name

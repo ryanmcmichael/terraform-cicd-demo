@@ -8,7 +8,7 @@ data "aws_availability_zones" "current" {
 
 #TODO: document that this needs to happen beforehand
 data "aws_acm_certificate" "ingress" {
-  domain   = "*.${var.domain}"
+  domain   = "${var.domain}"
   statuses = ["ISSUED"]
 }
 
@@ -21,11 +21,6 @@ resource "helm_release" "ingress_nginx" {
   namespace  = kubernetes_namespace.sla.metadata.0.name
   timeout    = 600
   values     = [data.template_file.nginx-ingress-external-values.rendered]
-
-  set {
-    name  = "controller.service.loadBalancerSourceRanges"
-    value = "{${join(",", var.whitelist_ips)}}"
-  }
 }
 
 resource "kubernetes_ingress_v1" "ingress" {
