@@ -1,18 +1,18 @@
-FROM node:16.10-alpine AS builder
-ENV NODE_ENV production
+FROM node:16
 
-# Add a work directory
-WORKDIR /app
+# Create app directory
+WORKDIR /usr/src/app
 
-# Copy these over first so we don't repeat yarn install for code changes
-COPY package.json package.json
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
-# Install dependencies
-RUN yarn install --production
+RUN npm install
+RUN npm ci --only=production
 
-# Copy app files
+# Bundle app source
 COPY . .
 
 EXPOSE 3000
-
 CMD [ "node", "app.js" ]
