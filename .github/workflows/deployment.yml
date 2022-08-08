@@ -62,15 +62,14 @@ jobs:
         run: |
           docker buildx create --use
 
-          docker buildx build \
-            --build-context app/web \
+          cd app/web && docker buildx build \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
             --tag ${{ env.RELEASE_IMAGE }} \
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:${{ env.GIT_BRANCH }}-latest \
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_WEB }}:latest \
             --push \
-            app/web/.
+            .
 
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
@@ -81,7 +80,7 @@ jobs:
         run: |
           docker buildx create --use
 
-          docker buildx build \
+          cd app/api && docker buildx build \
             --build-context app/api \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
@@ -89,7 +88,7 @@ jobs:
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:${{ env.GIT_BRANCH }}-latest \
             --tag ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:latest \
             --push \
-            app/api/.
+            .
 
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
