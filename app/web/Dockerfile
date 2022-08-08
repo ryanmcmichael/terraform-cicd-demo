@@ -13,9 +13,6 @@ RUN yarn install --production
 # Copy app files
 COPY . .
 
-# Build the app
-RUN yarn build
-
 EXPOSE 3000
 
 CMD [ "node", "app.js" ]
