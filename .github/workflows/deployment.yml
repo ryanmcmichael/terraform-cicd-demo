@@ -27,7 +27,7 @@ jobs:
           # Short name for current branch. For PRs, use target branch (base ref)
           GIT_BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          echo "KUBE_NAMESPACE=default" >> $GITHUB_ENV
+          echo "KUBE_NAMESPACE=toptal" >> $GITHUB_ENV
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.4.1
         with:
@@ -63,6 +63,7 @@ jobs:
           docker buildx create --use
 
           docker buildx build \
+            --build-context app/web
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
             --tag ${{ env.RELEASE_IMAGE }} \
@@ -81,6 +82,7 @@ jobs:
           docker buildx create --use
 
           docker buildx build \
+            --build-context app/api \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
             --tag ${{ env.RELEASE_IMAGE }} \

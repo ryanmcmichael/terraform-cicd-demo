@@ -36,12 +36,12 @@ variable "vpc_id" {
 
 variable "api_service_port" {
   type    = string
-  default = "8080"
+  default = "3000"
 }
 
 variable "web_service_port" {
   type    = string
-  default = "80"
+  default = "3000"
 }
 
 variable "client" {

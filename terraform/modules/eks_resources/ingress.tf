@@ -12,7 +12,7 @@ data "aws_acm_certificate" "ingress" {
   statuses = ["ISSUED"]
 }
 
-resource "helm_release" "ingress_nginx" {
+/*resource "helm_release" "ingress_nginx" {
   depends_on = [kubernetes_namespace.sla]
   name       = "${var.environment}-ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"
@@ -115,3 +115,4 @@ metrics:
   enabled: true
 EOF
 }
+*/

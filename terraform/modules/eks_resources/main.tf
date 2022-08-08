@@ -56,8 +56,17 @@ resource "kubernetes_namespace" "sla" {
   provider   = kubernetes
   depends_on = [data.aws_eks_cluster_auth.cluster]
   metadata {
-    name = "default"
+    name = var.client
   }
+}
+
+resource "helm_release" "cloudwatch_logs" {
+  depends_on = [kubernetes_namespace.sla]
+  name       = "${var.environment}-cloudwatch-logs"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-for-fluent-bit"
+  namespace  = kubernetes_namespace.sla.metadata.0.name
+  timeout    = 600
 }
 
 /*module "cloudwatch_logs" {

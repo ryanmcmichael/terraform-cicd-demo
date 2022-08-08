@@ -82,23 +82,6 @@ module "eks" {
       desired_size     = var.processing_node_desired
 
       instance_types   = [var.processing_node_instance_type]
-
-      labels = {
-        "hazelcast"         = "true"
-        "kafka"             = "true"
-        "reference_manager" = "false"
-        "content_manager"   = "true"
-        "router"            = "true"
-        "batcher"           = "true"
-        "accumulator"       = "true"
-        "fpga"              = "false"
-      }
-
-      #enable_bootstrap_user_data = true
-      bootstrap_extra_args       = <<-EOT
-[settings.kubernetes.node-labels]
-"fpga" = "false"
-EOT
     }
   }
 

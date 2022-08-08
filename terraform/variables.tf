@@ -55,12 +55,12 @@ variable "map_users" {
   default = [
     {
       #TODO: THIS USER MUST BE CREATED BEFORE RUNNING
-      userarn  = "arn:aws:iam::740861845137:user/wex.github.actions"
+      userarn  = "arn:aws:iam::803410019076:user/wex.github.actions"
       username = "terraform"
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::740861845137:user/ryan.mcmichael"
+      userarn  = "arn:aws:iam::803410019076:user/ryan.mcmichael"
       username = "ryan.mcmichael"
       groups   = ["system:masters"]
     },
