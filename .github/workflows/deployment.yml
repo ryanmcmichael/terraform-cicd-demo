@@ -63,7 +63,7 @@ jobs:
           docker buildx create --use
 
           docker buildx build \
-            --build-context app/web
+            --build-context app/web \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
             --tag ${{ env.RELEASE_IMAGE }} \
