@@ -81,7 +81,6 @@ jobs:
           docker buildx create --use
 
           cd app/api && docker buildx build \
-            --build-context app/api \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
             --tag ${{ env.RELEASE_IMAGE }} \
