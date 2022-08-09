@@ -11,12 +11,12 @@ module "vpc" {
   enable_vpn_gateway = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${var.environment}-${var.client}-cluster" = "shared"
+    "kubernetes.io/cluster/${var.client}-${var.environment}" = "shared"
     "kubernetes.io/role/elb"                                         = 1
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${var.environment}-${var.client}-cluster" = "shared"
+    "kubernetes.io/cluster/${var.client}-${var.environment}" = "shared"
     "kubernetes.io/role/internal-elb"                                = 1
   }
 

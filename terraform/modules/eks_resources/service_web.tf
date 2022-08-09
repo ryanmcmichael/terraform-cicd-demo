@@ -3,7 +3,7 @@ data "aws_ecr_image" "web_latest" {
   image_tag       = "${var.environment}-latest"
 }
 
-/*resource "kubernetes_deployment" "web_deployment" {
+resource "kubernetes_deployment" "web_deployment" {
   depends_on = [kubernetes_namespace.sla]
   metadata {
     name      = "${var.environment}-web-deployment"
@@ -37,7 +37,7 @@ data "aws_ecr_image" "web_latest" {
 
           env {
             name  = "API_HOST"
-            value = "https://${var.client}-${var.environment}.${var.domain}/api"
+            value = "${var.environment}-api-service:3000"
           }
 
           env {
@@ -77,4 +77,4 @@ resource "kubernetes_service" "web_service" {
     }
     type = "NodePort"
   }
-}*/
+}
