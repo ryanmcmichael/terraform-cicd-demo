@@ -1,4 +1,3 @@
-#TODO: document that branches must be dev/qa/uat/main to sync with CI/CD
 
 provider "aws" {
   region  = "us-east-1"
