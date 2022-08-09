@@ -13,6 +13,11 @@ variable "client" {
   type    = string
 }
 
+variable "aws_account_id" {
+  default = "803410019076"
+  type    = string
+}
+
 variable "domain" {
   default = "ryanmcmichael-demo.com"
   type    = string
@@ -38,12 +43,6 @@ variable "db_password" {
   type    = string
 }
 
-variable "efs_subnet_ids" {
-  type    = list(any)
-  default = ["us-east-1a", "us-east-1b", "us-east-1c"]
-}
-
-
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap."
   type = list(object({
@@ -55,7 +54,7 @@ variable "map_users" {
   default = [
     {
       #TODO: THIS USER MUST BE CREATED BEFORE RUNNING
-      userarn  = "arn:aws:iam::803410019076:user/wex.github.actions"
+      userarn  = "arn:aws:iam::803410019076:user/terraform"
       username = "terraform"
       groups   = ["system:masters"]
     },

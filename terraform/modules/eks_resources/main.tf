@@ -69,21 +69,12 @@ resource "helm_release" "cloudwatch_logs" {
   timeout    = 600
 }
 
-/*module "cloudwatch_logs" {
-  source = "git::https://github.com/DNXLabs/terraform-aws-eks-cloudwatch-logs.git"
-
-  enabled = true
-
-  cluster_name                     = data.aws_eks_cluster.cluster.name
-  cluster_identity_oidc_issuer     = var.cluster_oidc_issuer_url
-  cluster_identity_oidc_issuer_arn = var.oidc_provider_arn
-  worker_iam_role_name             = var.worker_iam_role_name
-  region                           = var.region
+resource "helm_release" "cloudwatch_metrics" {
+  depends_on = [kubernetes_namespace.sla]
+  name       = "${var.environment}-cloudwatch-metrics"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-cloudwatch-metrics"
+  namespace  = kubernetes_namespace.sla.metadata.0.name
+  timeout    = 600
 }
 
-#TODO: make this operational
-module "kubernetes_dashboard" {
-  source = "git::https://github.com/lablabs/terraform-aws-eks-kubernetes-dashboard.git"
-
-  settings = {}
-}*/

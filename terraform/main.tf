@@ -91,10 +91,11 @@ module "eks_resources" {
   db_endpoint             = module.rds.db_endpoint
 }
 
-/*module "ci_cd" {
-  source = "../../modules/ci_cd"
+module "cloudfront" {
+  source = "./modules/cloudfront"
 
-  environment = terraform.workspace
   client      = var.client
+  domain      = var.domain
+  tags        = local.tags
+  environment = var.environment
 }
-*/

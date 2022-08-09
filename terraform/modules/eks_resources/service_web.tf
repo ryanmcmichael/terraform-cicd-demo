@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "web_deployment" {
 
           env {
             name  = "API_HOST"
-            value = "${var.environment}-api-service:3000"
+            value = "https://${var.environment}-${var.client}.${var.domain}"#"${var.environment}-api-service:3000"
           }
 
           env {
