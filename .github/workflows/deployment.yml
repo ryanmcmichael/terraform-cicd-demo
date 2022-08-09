@@ -104,7 +104,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.RELEASE_REVISION }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_API }}:${{ env.RELEASE_REVISION }}
         with:
           args: config use-context arn:aws:eks:${{ env.AWS_REGION }}:${{ env.AWS_ACCOUNT }}:cluster/toptal-${{ env.GIT_BRANCH }} && kubectl set image deployment/${{ env.GIT_BRANCH }}-api-deployment ${{ env.GIT_BRANCH }}-api=${{ env.RELEASE_IMAGE }} --record -n ${{ env.KUBE_NAMESPACE }}
       - name: verify web deployment
