@@ -36,22 +36,22 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
-            name  = "DB_HOST"
+            name  = "DBHOST"
             value = var.db_endpoint
           }
 
           env {
-            name  = "DB_USER"
+            name  = "DBUSER"
             value = var.db_username
           }
 
           env {
-            name  = "DB_PASS"
+            name  = "DBPASS"
             value = var.db_password
           }
 
           env {
-            name  = "DB_PORT"
+            name  = "DBPORT"
             value = 5432
           }
 
