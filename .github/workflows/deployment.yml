@@ -1,10 +1,10 @@
-# SEPARATE API AND WEB REPOSITORIES
 name: Release
 
+# CORRECT BRANCHES HERE
 on:
   push:
     branches: [
-      demo
+      null
     ]
 
 env:
@@ -14,8 +14,8 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  ECR_REPOSITORY_WEB: "toptal/web"
-  ECR_REPOSITORY_API: "toptal/api"
+  ECR_REPOSITORY_WEB: "<YOUR_ECR_REPO_HERE>"
+  ECR_REPOSITORY_API: "<YOUR_ECR_REPO_HERE>"
 
 jobs:
   release:

@@ -1,45 +1,46 @@
 variable "environment" {
   type    = string
-  default = "demo"
+  default = "<YOUR_ENVIRONMENT_HERE>"
 }
 
 variable "region" {
-  default = "us-east-1"
+  default = "<YOUR_REGION_HERE>"
   type    = string
 }
 
 variable "client" {
-  default = "toptal"
+  default = "<YOUR_CLIENT_HERE>"
   type    = string
 }
 
 variable "aws_account_id" {
-  default = "803410019076"
+  default = "<YOUR_AWS_ACCOUNT_ID_HERE>"
   type    = string
 }
 
 variable "domain" {
-  default = "ryanmcmichael-demo.com"
+  default = "<YOUR_DOMAIN_HERE>"
   type    = string
 }
 
 variable "profile" {
-  default = "ryan-terraform"
+  default = "<YOUR_AWS_CLI_PROFILE_HERE>"
   type    = string
 }
 
 variable "db_username" {
-  default = "toptal"
+  default = "<YOUR_USERNAME_HERE>"
   type    = string
 }
 
 variable "db_name" {
-  default = "toptal"
+  default = "<YOUR_CLIENT_HERE>"
   type    = string
 }
 
+# Note: you should probably put these in SSM
 variable "db_password" {
-  default = "supersecret"
+  default = "<YOUR_PW_HERE>"
   type    = string
 }
 
@@ -54,13 +55,8 @@ variable "map_users" {
   default = [
     {
       #TODO: THIS USER MUST BE CREATED BEFORE RUNNING
-      userarn  = "arn:aws:iam::803410019076:user/terraform"
-      username = "terraform"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::803410019076:user/ryan.mcmichael"
-      username = "ryan.mcmichael"
+      userarn  = "<SAMPLE_USER_ARN>"
+      username = "<SAMPLE_USER_NAME>"
       groups   = ["system:masters"]
     },
   ]
